@@ -42,6 +42,7 @@ var words []string = []string{"one", "two", "three", "four", "five", "six", "sev
 func processLine(input string) int {
 	first := findFirstNumber(input)
 	last := findLastNumber(input)
+	fmt.Fprintf(os.Stdout, "processing line: %s got first %s last %s\n", strings.Trim(input, "\n"), first, last)
 	parsed, err := strconv.Atoi(first + last)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to parse string to int: %s\n", first+last)
@@ -67,7 +68,7 @@ func findFirstNumber(input string) string {
 
 func findLastNumber(input string) string {
 	word := ""
-	for i := len(input) - 1; i > 0; i-- {
+	for i := len(input) - 1; i >= 0; i-- {
 		if unicode.IsDigit(rune(input[i])) {
 			return string(input[i])
 		} else {
@@ -76,7 +77,7 @@ func findLastNumber(input string) string {
 			word = temp
 			for _, pre := range words {
 				if strings.HasPrefix(word, pre) {
-					return wordToInt(word)
+					return wordToInt(pre)
 				}
 			}
 		}
