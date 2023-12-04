@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"slices"
 	"strconv"
+	"strings"
+	"unicode"
 )
 
 func main() {
@@ -20,7 +23,7 @@ func main() {
 	sum := 0
 	for {
 		bytes, err := reader.ReadBytes('\n')
-		sum += processLine(bytes)
+		sum += processLine(string(bytes))
 		if err == io.EOF {
 			break
 		} else if err != nil {
@@ -32,24 +35,78 @@ func main() {
 	fmt.Fprintf(os.Stdout, "Sum: %d\n", sum)
 }
 
+var words []string = []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "zero"}
+
 // processLine will return an integer representation of the first and last
-// numbers encountered in the slice of bytes.
-func processLine(input []byte) int {
-	first := ""
-	last := ""
-	asString := string(input)
-	for i := range asString {
-		if asString[i] > 47 && asString[i] < 58 { // is a digit
-			if first == "" {
-				first = string(asString[i])
-			} else {
-				last = string(asString[i])
+// numbers encountered in the string.
+func processLine(input string) int {
+	first := findFirstNumber(input)
+	last := findLastNumber(input)
+	parsed, err := strconv.Atoi(first + last)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to parse string to int: %s\n", first+last)
+		return 0
+	}
+	return parsed
+}
+
+func findFirstNumber(input string) string {
+	word := ""
+	for _, char := range input {
+		if unicode.IsDigit(char) {
+			return string(char)
+		} else {
+			word += string(char)
+			if slices.Contains(words, word) {
+				return wordToInt(word)
 			}
 		}
 	}
-	if first != "" && last == "" {
-		last = first
+	return ""
+}
+
+func findLastNumber(input string) string {
+	word := ""
+	for i := len(input) - 1; i > 0; i-- {
+		if unicode.IsDigit(rune(input[i])) {
+			return string(input[i])
+		} else {
+			temp := string(input[i])
+			temp = temp + word
+			word = temp
+			for _, pre := range words {
+				if strings.HasPrefix(word, pre) {
+					return wordToInt(word)
+				}
+			}
+		}
 	}
-	parsed, _ := strconv.Atoi(first + last)
-	return parsed
+	return ""
+}
+
+func wordToInt(input string) string {
+	switch input {
+	case "zero":
+		return "0"
+	case "one":
+		return "1"
+	case "two":
+		return "2"
+	case "three":
+		return "3"
+	case "four":
+		return "4"
+	case "five":
+		return "5"
+	case "six":
+		return "6"
+	case "seven":
+		return "7"
+	case "eight":
+		return "8"
+	case "nine":
+		return "9"
+	default:
+		return "0"
+	}
 }
