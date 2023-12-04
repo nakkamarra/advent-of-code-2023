@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"slices"
 	"strconv"
 	"strings"
 	"unicode"
@@ -40,6 +39,10 @@ var words []string = []string{"one", "two", "three", "four", "five", "six", "sev
 // processLine will return an integer representation of the first and last
 // numbers encountered in the string.
 func processLine(input string) int {
+	if input == "" {
+		fmt.Fprintf(os.Stderr, "processing line: got empty string, skipping...\n")
+		return 0
+	}
 	first := findFirstNumber(input)
 	last := findLastNumber(input)
 	fmt.Fprintf(os.Stdout, "processing line: %s got first %s last %s\n", strings.Trim(input, "\n"), first, last)
@@ -58,8 +61,10 @@ func findFirstNumber(input string) string {
 			return string(char)
 		} else {
 			word += string(char)
-			if slices.Contains(words, word) {
-				return wordToInt(word)
+			for _, suf := range words {
+				if strings.HasSuffix(word, suf) {
+					return wordToInt(suf)
+				}
 			}
 		}
 	}
