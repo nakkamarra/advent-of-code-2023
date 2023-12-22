@@ -106,3 +106,23 @@ func composeNumber(lines [][]byte, i int, j int) string {
 	fmt.Fprintf(os.Stdout, "composed number: %s\n", number)
 	return number
 }
+
+func processLines2(lines [][]byte) int {
+	sum := 0
+	for i, line := range lines {
+		for j, b := range line {
+			if isGear(b) {
+				if checkNeighborPart2()
+			}
+		}
+	}
+	return sum
+}
+
+func isGear(b byte) bool {
+	return b == '*'
+}
+
+func checkNeighborPart2(lines [][]byte, i int, j int) {
+
+}
